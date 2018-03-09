@@ -88,7 +88,7 @@ void EducationLuncherServer::slotUpdateServer(QString msg)//客户端新信息�
 }
 
 
-void EducationLuncherServer::slotDisconnected(int i)
+void EducationLuncherServer::slotDisconnected(int i)//客户端断开连接后，触发此函数，将Listwidget对应数据移除
 {
    ui->listWidget->takeItem(i);
    // ui ->listWidget->clear();
