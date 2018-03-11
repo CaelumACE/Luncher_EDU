@@ -5,6 +5,7 @@
 #include <QLabel>
 #include<QListView>
 #include<QStringListModel>
+#include<QProcess>
 
 
 
@@ -78,6 +79,11 @@ void EducationLuncherServer::slotCreatServer()//创建服务器
    startButton->setEnabled(false);
    connect(teacherServer,SIGNAL(signalDisconnected(int)),this,SLOT(slotDisconnected(int)));
 
+//   QString programAddress ="D:/MySoft/Tencent/QQ/Bin/QQScLauncher.exe";  //打开程序的路径
+//   QStringList arguments;  //命令参数
+
+//   QProcess *chromeProcess = new QProcess(this);
+//   chromeProcess->start(programAddress,arguments);// 此处第二个参数为空，如果用一个参数，要保证programAddress中没有空格
 }
 
 void EducationLuncherServer::slotUpdateServer(QString msg)//客户端新信息触发UI界面信息更新

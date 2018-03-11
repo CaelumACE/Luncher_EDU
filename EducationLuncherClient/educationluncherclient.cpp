@@ -2,6 +2,7 @@
 #include "ui_educationluncherclient.h"
 #include <QtNetwork>
 #include <QLabel>
+#include<QProcess>
 
 EducationLuncherClient::EducationLuncherClient(QWidget *parent) :
     QMainWindow(parent),
@@ -28,7 +29,23 @@ EducationLuncherClient::~EducationLuncherClient()
     delete ui;
 }
 
+/*
+void EducationLuncherClient::getLocalHostIpv4Adress()
+{
 
+   QString localHostName=QHostInfo::localHostName();
+   QHostInfo info=QHostInfo::fromName(localHostName);
+   foreach (QHostAddress address, info.addresses())
+  {
+       if(address.protocol()==QAbstractSocket::IPv4Protocol)
+       {
+           QString localAddressIPV4=address.toString();
+       }
+
+  }
+}
+
+*/
 
 
 
@@ -36,7 +53,8 @@ void EducationLuncherClient::processPendingDatagrams() // 接收到服务端udp�
 {
 
 
-       tcpClient->connectToHost(QHostAddress("192.168.3.2"),6666);
+       tcpClient->connectToHost(QHostAddress("192.168.0.135"),6666);
+
        connect(tcpClient,SIGNAL(connected()),this,SLOT(slotConnected()));
 
 
@@ -60,8 +78,13 @@ void EducationLuncherClient::slotConnected() //连接成功后，将本机IP地�
     QByteArray clientData;
     clientData.append(localInformation);
     tcpClient->write(clientData);
+       QString programAddress ="D:/MySoft/Tencent/QQ/Bin/QQScLauncher.exe";  //打开程序的路径
+       QStringList arguments;  //命令参数
 
 
+       //此段为QProcessd 打开外部程序，打开UE4程序
+      QProcess *chromeProcess = new QProcess(this);
+       chromeProcess->start(programAddress,arguments);// 此处第二个参数为空，如果用一个参数，要保证programAddress中没有空格
     connect(tcpClient,SIGNAL(readyRead()),this,SLOT(slotreadServer()));
    // udpScoket->close();
 
