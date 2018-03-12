@@ -22,6 +22,7 @@ EducationLuncherClient::EducationLuncherClient(QWidget *parent) :
     setWindowTitle(tr("Broadcast Receiver"));
 
 
+
 }
 
 EducationLuncherClient::~EducationLuncherClient()
@@ -52,11 +53,13 @@ void EducationLuncherClient::getLocalHostIpv4Adress()
 void EducationLuncherClient::processPendingDatagrams() // 接收到服务端udp广播，触发此函数，发出tcp连接服务端
 {
 
-
-       tcpClient->connectToHost(QHostAddress("192.168.0.135"),6666);
-
-       connect(tcpClient,SIGNAL(connected()),this,SLOT(slotConnected()));
-
+    QAbstractSocket::SocketState currentState=tcpClient->state();
+    if(currentState==QAbstractSocket::UnconnectedState)
+    {
+    tcpClient->connectToHost(QHostAddress("192.168.3.2"),6666);
+    connect(tcpClient,SIGNAL(connected()),this,SLOT(slotConnected()));
+    connect(tcpClient,SIGNAL(disconnected()),this,SLOT(slotDisconnected()));
+    }
 
    while (udpScoket->hasPendingDatagrams())
    {
@@ -72,21 +75,22 @@ void EducationLuncherClient::processPendingDatagrams() // 接收到服务端udp�
 
 void EducationLuncherClient::slotConnected() //连接成功后，将本机IP地址和主机名字传送给服务端
 {
+    connect(tcpClient,SIGNAL(readyRead()),this,SLOT(slotreadServer()));
     QString localAdress=tcpClient->localAddress().toString();
     QString localName=QHostInfo::localHostName();
     QString localInformation=localName+"   "+localAdress;
     QByteArray clientData;
     clientData.append(localInformation);
     tcpClient->write(clientData);
-       QString programAddress ="D:/MySoft/Tencent/QQ/Bin/QQScLauncher.exe";  //打开程序的路径
+      QString programAddress ="C:/Users/wzh/AppData/Local/Google/Chrome/Application/chrome.exe";  //打开程序的路径
        QStringList arguments;  //命令参数
 
 
        //此段为QProcessd 打开外部程序，打开UE4程序
       QProcess *chromeProcess = new QProcess(this);
        chromeProcess->start(programAddress,arguments);// 此处第二个参数为空，如果用一个参数，要保证programAddress中没有空格
-    connect(tcpClient,SIGNAL(readyRead()),this,SLOT(slotreadServer()));
-   // udpScoket->close();
+
+
 
 
 }
@@ -97,4 +101,12 @@ void EducationLuncherClient::slotreadServer() //当服务端有新信息时触�
       ui->label->setText(serverMsg);
 
 
+}
+
+
+void EducationLuncherClient::slotDisconnected()
+{//此函数为socket断开连接触发，防止槽和信号多次连接引发多次执行的问题，需要将槽和信号断开。
+
+    disconnect(tcpClient,SIGNAL(connected()),this,SLOT(slotConnected()));
+    disconnect(tcpClient,SIGNAL(disconnected()),this,SLOT(slotDisconnected()));
 }

@@ -16,14 +16,14 @@ public:
     explicit EducationLuncherClient(QWidget *parent = 0);
     ~EducationLuncherClient();
 
- //   void getLocalHostIpv4Adress();
+
 
 private slots:
 
     void processPendingDatagrams();
-
     void slotConnected();
     void slotreadServer();
+    void slotDisconnected();
 
 private:
     QTcpSocket* tcpClient;
